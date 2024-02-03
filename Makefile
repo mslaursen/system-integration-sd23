@@ -1,6 +1,6 @@
-01-go:
+01-a:
 	poetry run go run assignments/01/main.go
-01-py:
+01-b:
 	poetry run python assignments/01/main.py
 
 lint-py:

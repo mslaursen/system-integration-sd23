@@ -6,11 +6,15 @@ poetry install
 poetry shell
 ```
 
+# Requirements
+`go ^1.20`
+`python ^3.12`
 
 # Running the assignment tasks
 
-# 01
+
 ```bash
-make 01-go
-make 01-py
+// Assignment 01
+make 01-a
+make 01-b
 ```

@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 def parse_csv(path: Path) -> list[Any]:
     with open(path, "r", newline="") as csv_file:
         reader = csv.reader(csv_file)
+        next(reader)  # skip header
         return [row for row in reader]
 
 
@@ -41,22 +42,15 @@ if __name__ == "__main__":
     current_dir = Path(__file__).parent
     data_dir = current_dir / "data"
 
-    print("---- CSV ----")
-    csv_path = data_dir / "csv.csv"
-    print(parse_csv(csv_path), "\n")
+    parsers = {
+        "csv": parse_csv,
+        "json": parse_json,
+        "text": parse_text,
+        "xml": parse_xml,
+        "yaml": parse_yaml,
+    }
 
-    print("---- JSON ----")
-    json_path = data_dir / "json.json"
-    print(parse_json(json_path), "\n")
-
-    print("---- TEXT ----")
-    text_path = data_dir / "text.text"
-    print(parse_text(text_path), "\n")
-
-    print("---- XML ----")
-    xml_path = data_dir / "xml.xml"
-    print(parse_xml(xml_path), "\n")
-
-    print("---- YAML ----")
-    yaml_path = data_dir / "yaml.yaml"
-    print(parse_yaml(yaml_path), "\n")
+    for file_type, parser in parsers.items():
+        print(f"Parsing {file_type}...")
+        file_path = data_dir / f"{file_type}.{file_type}"
+        print(f"{parser(file_path)}", "\n")

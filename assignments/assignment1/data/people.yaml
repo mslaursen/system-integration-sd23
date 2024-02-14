@@ -1,0 +1,33 @@
+- address:
+    city: Copanhagen
+    country: Denmark
+  age: 30
+  hobbies:
+  - reading
+  - travelling
+  isMarried: false
+  name: John
+- address:
+    city: Stockholm
+    country: Sweden
+  age: 25
+  isMarried: true
+  name: Jane
+- address:
+    city: Oslo
+    country: Norway
+  age: 35
+  hobbies:
+  - reading
+  - travelling
+  isMarried: true
+  name: Jim
+- address:
+    city: Helsinki
+    country: Finland
+  age: 40
+  hobbies:
+  - reading
+  - travelling
+  isMarried: false
+  name: Jill

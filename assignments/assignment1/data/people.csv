@@ -1,0 +1,5 @@
+name,age,city,country,hobbies,isMarried
+John,30,Copanhagen,Denmark,reading;travelling,False
+Jane,25,Stockholm,Sweden,,True
+Jim,35,Oslo,Norway,reading;travelling,True
+Jill,40,Helsinki,Finland,reading;travelling,False

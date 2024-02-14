@@ -18,3 +18,9 @@ poetry shell
 make 01-a
 make 01-b
 ```
+
+```bash
+// Assignment 02
+make 02-a
+# go to 127.0.0.1:8000/docs
+```

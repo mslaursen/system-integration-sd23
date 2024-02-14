@@ -9,4 +9,4 @@ lint-py:
 	poetry run black assignments
 
 02-a:
-	uvicorn ./assignments.assignments2.server:app --reload
+	uvicorn assignments.assignment2.server:app --reload

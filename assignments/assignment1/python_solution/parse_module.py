@@ -1,35 +1,18 @@
 import json
 import csv
+from typing import Any
+from pydantic import BaseModel
 import yaml
 from pathlib import Path
+import xmltodict
+from typing import Callable
+
+from assignments.assignment1.python_solution.dtos import PersonDTO, PersonDTO_CSV
 
 
-from pydantic import BaseModel, Field
-
-
-class _BasePersonDTO(BaseModel):
-    name: str
-    age: int
-    hobbies: list[str] | None = None
-    is_married: bool = Field(..., alias="isMarried")
-
-
-class AddressDTO(BaseModel):
-    city: str
-    country: str
-
-
-class PersonDTO(_BasePersonDTO):
-    address: AddressDTO
-
-
-class PersonDTO_CSV(_BasePersonDTO, AddressDTO): ...
-
-
-def parse_csv[OutDTO: BaseModel](path: Path, out_dto: type[OutDTO]) -> list[OutDTO]:
-    with open(path, "r") as csv_file:
+def parse_csv[T](path: Path, out_dto: type[T]) -> list[T]:
+    with path.open() as csv_file:
         reader = csv.DictReader(csv_file)
-
         return [
             out_dto(**person)
             for person in [
@@ -39,24 +22,38 @@ def parse_csv[OutDTO: BaseModel](path: Path, out_dto: type[OutDTO]) -> list[OutD
         ]
 
 
-def parse_json[OutDTO: BaseModel](path: Path, out_dto: type[OutDTO]) -> list[OutDTO]:
-    with open(path, "r") as json_file:
+def parse_json[T: BaseModel](path: Path, out_dto: type[T]) -> list[T]:
+    with path.open() as json_file:
         return [out_dto(**person) for person in json.loads(json_file.read())]
 
 
-def parse_text(path: Path) -> str:
-    with open(path, "r") as text_file:
+def parse_text(path: Path, *_: Any) -> str:
+    with path.open() as text_file:
         return text_file.read()
 
 
-def parse_xml[OutDTO: BaseModel](path: Path, out_dto: type[OutDTO]) -> list[OutDTO]:
-    with open(path, "r") as xml_file:
-        print(xml_file.read())
-
-
-def parse_yaml[OutDTO: BaseModel](path: Path, out_dto: type[OutDTO]) -> list[OutDTO]:
-    with open(path, "r") as yaml_file:
+def parse_yaml[T: BaseModel](path: Path, out_dto: type[T]) -> list[T]:
+    with path.open() as yaml_file:
         return [out_dto(**person) for person in yaml.safe_load(yaml_file)]
+
+
+def parse_xml[OutDTO: BaseModel](path: Path, out_dto: type[OutDTO]) -> list[OutDTO]:
+    with path.open() as xml_file:
+        return [
+            out_dto(**person)
+            for person in xmltodict.parse(xml_file.read())["root"]["row"]
+        ]
+
+
+def _run_parser(
+    parser: Callable[..., Any],
+    out_dto: type[BaseModel] | None,
+    file_path: Path,
+) -> None:
+
+    print(f"Parsing {file_path.name}...")
+    result = parser(file_path, out_dto) if out_dto else parser(file_path)
+    print(result)
 
 
 if __name__ == "__main__":
@@ -64,14 +61,12 @@ if __name__ == "__main__":
     data_dir = current_dir / "data"
 
     parsers = {
-        # "csv": (parse_csv, PersonDTO_CSV),
-        # "json": parse_json,
-        # "text": parse_text,
-        # "xml": parse_xml,
-        # "yaml": parse_yaml,
+        "csv": (parse_csv, PersonDTO_CSV),
+        "json": (parse_json, PersonDTO),
+        "text": (parse_text, None),
+        "yaml": (parse_yaml, PersonDTO),
+        "xml": (parse_xml, PersonDTO),
     }
 
     for file_type, (parser, out_dto) in parsers.items():
-        print(f"Parsing {file_type}...")
-        file_path = data_dir / f"people.{file_type}"
-        print(f"{parser(file_path, PersonDTO_CSV)}", "\n")
+        _run_parser(parser, out_dto, data_dir / f"people.{file_type}")

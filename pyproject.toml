@@ -6,7 +6,7 @@ authors = ["martinlaursen97 <martin_laursen21@hotmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.12.1"
+python = "^3.12"
 ruff = "^0.1.15"
 mypy = "^1.8.0"
 black = "^24.1.1"
@@ -15,9 +15,6 @@ types-pyyaml = "^6.0.12.12"
 fastapi = "^0.109.2"
 uvicorn = "^0.27.1"
 pydantic = "^2.6.1"
-xmltodict = "^0.13.0"
-pydantic-xml = "^2.9.0"
-pandas = "^2.2.0"
 
 
 [build-system]

@@ -10,7 +10,7 @@ from typing import Callable
 from assignments.assignment1.python_solution.dtos import PersonDTO, PersonDTO_CSV
 
 
-def parse_csv[T](path: Path, out_dto: type[T]) -> list[T]:
+def parse_csv[T](path: Path, out_dto: T) -> list[T]:
     with path.open() as csv_file:
         reader = csv.DictReader(csv_file)
         return [
@@ -22,7 +22,7 @@ def parse_csv[T](path: Path, out_dto: type[T]) -> list[T]:
         ]
 
 
-def parse_json[T](path: Path, out_dto: type[T]) -> list[T]:
+def parse_json[T](path: Path, out_dto: T) -> list[T]:
     with path.open() as json_file:
         return [out_dto(**person) for person in json.loads(json_file.read())]
 
@@ -32,12 +32,12 @@ def parse_text(path: Path) -> str:
         return text_file.read()
 
 
-def parse_yaml[T: BaseModel](path: Path, out_dto: type[T]) -> list[T]:
+def parse_yaml[T: BaseModel](path: Path, out_dto: T) -> list[T]:
     with path.open() as yaml_file:
         return [out_dto(**person) for person in yaml.safe_load(yaml_file)]
 
 
-def parse_xml[T: BaseModel](path: Path, out_dto: type[T]) -> list[T]:
+def parse_xml[T: BaseModel](path: Path, out_dto: T) -> list[T]:
     with path.open() as xml_file:
         return [
             out_dto(**person)

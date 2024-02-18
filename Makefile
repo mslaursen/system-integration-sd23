@@ -1,7 +1,7 @@
 01-a:
 	poetry run go run assignments/assignment1/go_solution/parse_module.go
 01-b:
-	poetry run python assignments/assignment1/python_solution/parse_module.py
+	python assignments/assignment1/python_solution/parse_module.py
 
 lint-py:
 	poetry run ruff check . --fix

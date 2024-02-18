@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bufio"
-	"encoding/csv"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
-	"runtime"
 
 	"gopkg.in/yaml.v3"
 )
@@ -18,27 +15,26 @@ type Path = string
 
 type ParserFunc func(string) (any, error)
 
-type XMLFruits struct {
-	XMLName xml.Name `xml:"fruits"`
-	Fruits  []Fruit  `xml:"fruit"`
+type Address struct {
+	City    string `json:"city"`
+	Country string `json:"country"`
 }
 
-type Fruit struct {
-	Name  string `json:"fruit" xml:"name" yaml:"fruit"`
-	Color string `json:"color" xml:"color" yaml:"color"`
+type Person struct {
+	Name      string   `json:"name" xml:"name"`
+	Age       int      `json:"age" xml:"age"`
+	Address   Address  `json:"address" xml:"address"`
+	Hobbies   []string `json:"hobbies" xml:"hobbies>hobby"`
+	IsMarried bool     `json:"isMarried" xml:"isMarried"`
 }
 
-func openFile(path Path) (*os.File, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-
-	return file, nil
+type Root struct {
+	XMLName xml.Name `xml:"root"`
+	People  []Person `xml:"row"`
 }
 
 func readFileContent(path Path) ([]byte, error) {
-	file, err := openFile(path)
+	file, err := os.Open(path)
 
 	if err != nil {
 		return nil, err
@@ -48,104 +44,60 @@ func readFileContent(path Path) ([]byte, error) {
 	return io.ReadAll(file)
 }
 
-func parseCSV(path Path) (any, error) {
-	file, err := openFile(path)
-
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	reader := csv.NewReader(file)
-
-	reader.Read() // skip header
-
-	fruits, err := reader.ReadAll()
-
-	if err != nil {
-		return nil, err
-	}
-
-	return fruits, nil
+func parseCSV[T any](path Path, targetStruct T) ([]T, error) {
+	return nil, nil
 }
 
-func parseJSON(path Path) (any, error) {
+func parseJSON[T any](path Path, targetStruct T) ([]T, error) {
 	bytes, err := readFileContent(path)
 
 	if err != nil {
 		return nil, err
 	}
 
-	fruits := []Fruit{}
-	err = json.Unmarshal(bytes, &fruits)
+	var targetStructs []T
+	err = json.Unmarshal(bytes, &targetStructs)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return fruits, nil
+	return targetStructs, nil
 }
 
-func parseTEXT(path Path) (any, error) {
-	file, err := openFile(path)
-
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	reader := bufio.NewReader(file)
-
-	fruits := []string{}
-
-	for {
-		line, err := reader.ReadString('\n')
-
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return nil, err
-		}
-
-		fruits = append(fruits, line)
-	}
-
-	return fruits, nil
-}
-
-func parseXML(path Path) (any, error) {
+func parseYAML[T any](path Path, targetStruct T) ([]T, error) {
 	bytes, err := readFileContent(path)
 
 	if err != nil {
 		return nil, err
 	}
 
-	fruits := &XMLFruits{}
-	err = xml.Unmarshal(bytes, &fruits)
+	var targetStructs []T
+	err = yaml.Unmarshal(bytes, &targetStructs)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return fruits, nil
+	return targetStructs, nil
 }
 
-func parseYAML(path Path) (any, error) {
+func parseXML[T any](path Path, targetStruct T) ([]T, error) {
 	bytes, err := readFileContent(path)
 
 	if err != nil {
 		return nil, err
 	}
 
-	fruits := []Fruit{}
-	err = yaml.Unmarshal(bytes, &fruits)
+	var root Root
+	err = xml.Unmarshal(bytes, &root)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return fruits, nil
+	return root, 
+
 }
 
 func runParser(parser ParserFunc, path Path) (any, error) {
@@ -157,26 +109,26 @@ func runParser(parser ParserFunc, path Path) (any, error) {
 }
 
 func main() {
-	_, filename, _, ok := runtime.Caller(0)
-	if !ok {
-		fmt.Println("Error")
-		return
-	}
-	currentDir := filepath.Dir(filename)
-	dataDir := filepath.Join(currentDir, "data")
+	wd, _ := os.Getwd()
+	dataDir := filepath.Join(filepath.Dir(wd), "data")
+	filePath := filepath.Join(dataDir, "people.xml")
 
-	parsers := map[string]ParserFunc{
-		"csv.csv":   parseCSV,
-		"json.json": parseJSON,
-		"text.text": parseTEXT,
-		"xml.xml":   parseXML,
-		"yaml.yaml": parseYAML,
-	}
+	json, _ := parseXML(filePath, Person{})
 
-	for path, parser := range parsers {
-		fmt.Printf("Parsing %s...\n", path)
-		fruits, _ := runParser(parser, filepath.Join(dataDir, path))
-		fmt.Println(fruits)
-		fmt.Println()
-	}
+	fmt.Println(json)
+
+	//parsers := map[string]ParserFunc{
+	//	//"csv.csv":   parseCSV,
+	//	"json.json": parseJSON,
+	//	//"text.text": parseTEXT,
+	//	//"xml.xml":   parseXML,
+	//	//"yaml.yaml": parseYAML,
+	//}
+	//
+	//for path, parser := range parsers {
+	//	fmt.Printf("Parsing %s...\n", path)
+	//	fruits, _ := runParser(parser, filepath.Join(dataDir, path))
+	//	fmt.Println(fruits)
+	//	fmt.Println()
+	//}
 }

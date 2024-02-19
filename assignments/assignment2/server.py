@@ -6,8 +6,13 @@ from assignments.assignment1.python_solution.parse_module import (
     parse_text,
     parse_xml,
     parse_yaml,
+)
+
+from assignments.assignment1.python_solution.dtos import (
     PersonDTO,
     PersonDTO_CSV,
+    DataResponse,
+    DataValueResponse,
 )
 
 
@@ -21,25 +26,49 @@ def _get_path(extension: str) -> Path:
 
 
 @app.get("/csv")
-def get_parsed_csv() -> list[PersonDTO_CSV]:
-    return parse_csv(path=_get_path("csv"), out_dto=PersonDTO_CSV)
+def get_parsed_csv() -> DataResponse[PersonDTO_CSV]:
+    return DataResponse(
+        data=parse_csv(
+            path=_get_path("csv"),
+            out_dto=PersonDTO_CSV,
+        )
+    )
 
 
 @app.get("/json")
-def get_parsed_json() -> list[PersonDTO]:
-    return parse_json(path=_get_path("json"), out_dto=PersonDTO)
+def get_parsed_json() -> DataResponse[PersonDTO]:
+    return DataResponse(
+        data=parse_json(
+            path=_get_path("json"),
+            out_dto=PersonDTO,
+        )
+    )
 
 
 @app.get("/text")
-def get_parsed_text() -> str:
-    return parse_text(_get_path("text"))
+def get_parsed_text() -> DataValueResponse[str]:
+    return DataValueResponse(
+        data=parse_text(
+            _get_path("text"),
+        )
+    )
 
 
 @app.get("/xml")
-def get_parsed_xml() -> list[PersonDTO]:
-    return parse_xml(path=_get_path("xml"), out_dto=PersonDTO)
+def get_parsed_xml() -> DataResponse[PersonDTO]:
+    return DataResponse(
+        data=parse_xml(
+            path=_get_path("xml"),
+            out_dto=PersonDTO,
+        )
+    )
 
 
 @app.get("/yaml")
-def get_parsed_yaml() -> list[PersonDTO]:
-    return parse_yaml(path=_get_path("yaml"), out_dto=PersonDTO)
+def get_parsed_yaml() -> DataResponse[PersonDTO]:
+    return DataResponse(
+        data=parse_yaml(
+            path=_get_path("yaml"),
+            out_dto=PersonDTO,
+        )
+    )

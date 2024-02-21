@@ -1,4 +1,4 @@
-module github.com/mslaursen/system-integration-sd23
+module myapp
 
 go 1.20
 

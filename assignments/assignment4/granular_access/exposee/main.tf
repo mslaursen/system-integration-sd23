@@ -1,38 +1,41 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~>2.46.0"
-    }
-  }
+# Generate random resource group name
+resource "random_pet" "rg_name" {
+  prefix = var.resource_group_name_prefix
 }
 
-resource "azurerm_mysql_server" "mysql" {
-  name                = "granular-access-mysql"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+resource "azurerm_resource_group" "rg" {
+  location = var.resource_group_location
+  name     = random_pet.rg_name.id
+}
 
-  sku_name   = "GP_Gen5_2"
-  storage_mb = 5120
-  version    = "5.7"
-
-  administrator_login          = "granular-access"
-  administrator_login_password = "P4ssword1234!"
-
-  auto_grow_enabled                 = true
-  backup_retention_days             = 7
-  geo_redundant_backup_enabled      = true
-  infrastructure_encryption_enabled = true
-  public_network_access_enabled     = true
-  ssl_enforcement_enabled           = true
-  ssl_minimal_tls_version_enforced  = "TLS1_2"
+# Generate random value for the name
+resource "random_string" "name" {
+  length  = 8
+  lower   = true
+  numeric = false
+  special = false
+  upper   = false
 }
 
 
-resource "azurerm_mysql_database" "mysql" {
-  name                = "granular-access-db"
+# Manages the MySQL Flexible Server
+resource "azurerm_mysql_flexible_server" "default" {
+  location                     = azurerm_resource_group.rg.location
+  name                         = "mysqlfs-${random_string.name.result}"
+  resource_group_name          = azurerm_resource_group.rg.name
+  administrator_login          = random_string.name.result
+  administrator_password       = "P4ssword!"
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = false
+  sku_name                     = "GP_Standard_D2ds_v4"
+  version                      = "8.0.21"
+}
+
+
+resource "azurerm_mysql_firewall_rule" "example" {
+  name                = "office"
   resource_group_name = azurerm_resource_group.rg.name
-  server_name         = azurerm_mysql_server.mysql.name
-  charset             = "UTF8"
-  collation           = "UTF8_GENERAL_CI"
+  server_name         = azurerm_mysql_flexible_server.default.name
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "0.0.0.0"
 }

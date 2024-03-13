@@ -73,3 +73,6 @@ UPDATE products SET stock_quantity = [new_quantity] WHERE id = [product_id];
 
 Replace `[new_quantity]` with the new stock quantity and `[product_id]` with the ID of the product you wish to update.
 
+## Database diagram
+
+![Alt text](image.png)

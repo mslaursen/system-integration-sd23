@@ -22,6 +22,7 @@ resource "azurerm_mysql_flexible_server" "default" {
   version                      = "8.0.21"
 }
 
+
 # firewall rule to allow access to the MySQL Flexible Server
 resource "azurerm_mysql_flexible_server_firewall_rule" "allow_all" {
   name                = "allow_all"
@@ -29,4 +30,5 @@ resource "azurerm_mysql_flexible_server_firewall_rule" "allow_all" {
   server_name         = azurerm_mysql_flexible_server.default.name
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "255.255.255.255"
+
 }

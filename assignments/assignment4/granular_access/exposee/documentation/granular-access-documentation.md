@@ -3,6 +3,10 @@
 
 This document serves as a guide for connecting to the database as the `integrator` user and outlines the user's permissions regarding various database operations.
 
+## Prerequisuites
+
+MySQL is installed on your machine
+
 ## Connecting to the Database
 
 To connect to the database as the `integrator` user, use the following credentials:
@@ -14,7 +18,7 @@ To connect to the database as the `integrator` user, use the following credentia
 You can connect to the database using a database client or a command-line tool. For example, using the MySQL command-line tool, you would enter the following command:
 
 ```bash
-mysql -u integrator -p -h [host_address]
+mysql -u integrator -p -h granular-access-mysql.mysql.database.azure.com
 ```
 
 After executing the command, you will be prompted to enter the password. Provide the `integrator` user's password when prompted.

@@ -22,6 +22,14 @@ resource "azurerm_mysql_flexible_server" "default" {
   version                      = "8.0.21"
 }
 
+# disable require_secure_transport config
+resource "azurerm_mysql_flexible_server_configuration" "require-secure-transport" {
+  resource_group_name = azurerm_resource_group.rg.name
+  server_name         = azurerm_mysql_flexible_server.default.name
+  name                = "require_secure_transport"
+  value               = "OFF"
+}
+
 
 # firewall rule to allow access to the MySQL Flexible Server
 resource "azurerm_mysql_flexible_server_firewall_rule" "allow_all" {

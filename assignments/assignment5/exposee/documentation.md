@@ -14,7 +14,7 @@ To start receiving events, register your callback URL with the service.
 
 - **Endpoint:** `/webhooks/register`
 - **Method:** `POST`
-- *Emits no event.*
+
 - **Request Body:**
 
 ```json
@@ -38,7 +38,6 @@ To stop receiving events, you can unregister your webhook.
 
 - **Endpoint:** `/webhooks/unregister/{webhook_id}`
 - **Method:** `DELETE`
-- *Emits no event.*
 
 ### Viewing Registered Webhooks
 
@@ -46,7 +45,6 @@ To see all registered webhooks:
 
 - **Endpoint:** `/webhooks`
 - **Method:** `GET`
-- *Emits no event.*
 
 ### Testing Webhooks
 
@@ -121,6 +119,7 @@ To indicate the service is currently down:
 
 - **Endpoint:** `/service/unavailable`
 - **Method:** `POST`
+- *Emits a `service_unavailable` event.*
 
 ### Marking Service as Available
 
@@ -128,6 +127,7 @@ To indicate the service is back online:
 
 - **Endpoint:** `/service/available`
 - **Method:** `POST`
+- *Emits a `service_available` event.*
 
 ## Event Notifications
 
@@ -152,7 +152,7 @@ Your registered webhook endpoint will receive JSON payloads for various events.
 - `ticket_updated`: Notifies when a ticket is updated.
 - `service_unavailable`: Indicates the service is unavailable.
 - `service_available`: Indicates the service is available again.
-- `ping`: Used for testing webhook connectivity.
+- `ping`: Used for testing webhook connections.
 
 
 
